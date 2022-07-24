@@ -32,7 +32,9 @@ function setup() {
         animatedSprite = new PIXI.AnimatedSprite(allUkr);
         animatedSprite.scale.set(0.1, 0.1);
         animatedSprite.anchor.set(0.5, 0.5);
-        animatedSprite.position.set(200, 200);
+        gsap.fromTo(animatedSprite, {width: 0, height: 0}, {duration: 3, width: 90, height: 90}); 
+
+        animatedSprite.position.set(500, 170);
         app.stage.addChild(animatedSprite);
         
         win = new PIXI.Sprite(PIXI.Loader.shared.resources["image/win.jpg"].texture);
@@ -67,7 +69,7 @@ function addRusFascist() {
     } else if (russia.y < 390){
         russia.x = getRandom(650, 960);
     } else russia.x = getRandom(500, 800);
-
+    gsap.fromTo(russia, {x: 1200, width: 0, height: 0}, {x: russia.x, duration: 1.5, width: 51.2, height: 51.2}); 
     app.stage.addChild(russia);
     allRus.push(russia);
     countRussia++;
@@ -75,12 +77,6 @@ function addRusFascist() {
 
 function gameLoop() {
     message.text=countRussia;
-    if (countRussia === 0){
-        win.visible = true;
-        message.visible = false;
-        rules.visible = false;
-        clearInterval(game);
-    }
 };
 
 function stateBorder(sprite, container) {          
@@ -98,7 +94,10 @@ function stateBorder(sprite, container) {
     }
 }
 
-window.addEventListener("keydown", function(event){
+window.addEventListener("keydown", moveFunc);
+
+function moveFunc(event)
+{
     stateBorder(animatedSprite, {x: 20, y: 20, width: 1130, height: 760});
 
     startAnimationPosition == 1 ? startAnimationPosition = 0 : startAnimationPosition = 1;
@@ -107,33 +106,43 @@ window.addEventListener("keydown", function(event){
     for (russia of allRus) {
         if (hitTestRectangle(animatedSprite, russia)) {
             russia.visible = false;
-             countRussia--;
+            countRussia--;
         }        
     }
 
-    switch (event.code) {
-        case 'ArrowLeft':
-            animatedSprite.x -= 10;
-            animatedSprite.rotation = 3.14;
-            break;
-        case 'ArrowRight':
-            animatedSprite.x += 10;
-            animatedSprite.rotation = 0;
-            break;
-        case 'ArrowUp':
-            animatedSprite.y -= 10;
-            animatedSprite.rotation = -1.57;
-            break;
-        case 'ArrowDown':
-            animatedSprite.y += 10;
-            animatedSprite.rotation = 1.57;
-            break;
-        default:
-            animatedSprite.x += 0;
-            animatedSprite.y += 0;
-            break;
-    } 
-})
+        switch (event.code) {
+            case 'ArrowLeft':
+                animatedSprite.x -= 10;
+                animatedSprite.rotation = 3.14;
+                break;
+            case 'ArrowRight':
+                animatedSprite.x += 10;
+                animatedSprite.rotation = 0;
+                break;
+            case 'ArrowUp':
+                animatedSprite.y -= 10;
+                animatedSprite.rotation = -1.57;
+                break;
+            case 'ArrowDown':
+                animatedSprite.y += 10;
+                animatedSprite.rotation = 1.57;
+                break;
+            default:
+                animatedSprite.x += 0;
+                animatedSprite.y += 0;
+                break;
+        } 
+    
+
+    if (countRussia === 0){
+        gsap.fromTo(win, {x: -1200}, {duration: 2.5, x: -100, ease: "bounce"}); 
+        win.visible = true;
+        message.visible = false;
+        rules.visible = false;
+        clearInterval(game);
+        window.removeEventListener("keydown", moveFunc);
+    }
+}
 
 function hitTestRectangle(r1, r2) {
     let hit;
