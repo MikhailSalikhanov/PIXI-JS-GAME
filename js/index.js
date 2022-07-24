@@ -8,12 +8,15 @@ PIXI.Loader.shared
   .add("image/russia.png")
   .add("image/UkraineMap.png")
   .add("image/win.jpg")
+  .add("image/pacman.png")
   .load(setup);
 
-let packman, russia, ukr, countRussia = 0, win, game;
-let rules = new PIXI.Text("Make russians equal to zero");
+let packman, packman2, russia, ukr, countRussia = 0, win, game, animatedSprite, startAnimationPosition = 0;
+let rules = new PIXI.Text(`   Using keyboard arrows, 
+make russians equal to zero`);
 let message = new PIXI.Text(countRussia);
 let allRus = [];
+let allUkr = [];
 
 function setup() {
         ukr = new PIXI.Sprite(PIXI.Loader.shared.resources["image/UkraineMap.png"].texture);
@@ -21,10 +24,16 @@ function setup() {
         ukr.scale.set(0.9, 0.9);
 
         packman = new PIXI.Sprite(PIXI.Loader.shared.resources["image/dino.png"].texture);
-        packman.scale.set(0.1, 0.1);
-        packman.position.set(200, 200);
-        app.stage.addChild(packman);
-        packman.anchor.set(0.5, 0.5);
+        allUkr.push(packman);
+
+        packman2 = new PIXI.Sprite(PIXI.Loader.shared.resources["image/pacman.png"].texture);
+        allUkr.push(packman2);
+
+        animatedSprite = new PIXI.AnimatedSprite(allUkr);
+        animatedSprite.scale.set(0.1, 0.1);
+        animatedSprite.anchor.set(0.5, 0.5);
+        animatedSprite.position.set(200, 200);
+        app.stage.addChild(animatedSprite);
         
         win = new PIXI.Sprite(PIXI.Loader.shared.resources["image/win.jpg"].texture);
         app.stage.addChild(win);
@@ -35,39 +44,36 @@ function setup() {
         addRusFascist();
         addRusFascist();
 
-
-        function addRusFascist() {
-                russia = new PIXI.Sprite(PIXI.Loader.shared.resources["image/russia.png"].texture);
-                russia.scale.set(0.1, 0.1);
-                russia.y = getRandom(20, 700);
-                if (russia.y < 160) {
-                    russia.x = getRandom(500, 630);
-                } else if (russia.y < 390){
-                    russia.x = getRandom(650, 960);
-                } else russia.x = getRandom(500, 800);
-
-                app.stage.addChild(russia);
-                allRus.push(russia);
-                countRussia++;
-          }
-          
         game = setInterval(addRusFascist, 2500);
         
-        function getRandom(min, max) {
-          return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-  
-        message.position.set(810, 50);
+        message.position.set(810, 80);
         app.stage.addChild(message);
         rules.position.set(700, 20);    
         app.stage.addChild(rules);
 
-        
         app.ticker.add(() => gameLoop());
 }
 
+function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  
+function addRusFascist() {
+    russia = new PIXI.Sprite(PIXI.Loader.shared.resources["image/russia.png"].texture);
+    russia.scale.set(0.1, 0.1);
+    russia.y = getRandom(20, 700);
+    if (russia.y < 160) {
+        russia.x = getRandom(500, 630);
+    } else if (russia.y < 390){
+        russia.x = getRandom(650, 960);
+    } else russia.x = getRandom(500, 800);
+
+    app.stage.addChild(russia);
+    allRus.push(russia);
+    countRussia++;
+}
+
 function gameLoop() {
-    stateBorder(packman, {x: 20, y: 20, width: 1130, height: 760});
     message.text=countRussia;
     if (countRussia === 0){
         win.visible = true;
@@ -75,9 +81,7 @@ function gameLoop() {
         rules.visible = false;
         clearInterval(game);
     }
-    
 };
-
 
 function stateBorder(sprite, container) {          
     if (sprite.x < container.x) {
@@ -95,8 +99,13 @@ function stateBorder(sprite, container) {
 }
 
 window.addEventListener("keydown", function(event){
+    stateBorder(animatedSprite, {x: 20, y: 20, width: 1130, height: 760});
+
+    startAnimationPosition == 1 ? startAnimationPosition = 0 : startAnimationPosition = 1;
+    animatedSprite.gotoAndStop(startAnimationPosition);
+
     for (russia of allRus) {
-        if (hitTestRectangle(packman, russia)) {
+        if (hitTestRectangle(animatedSprite, russia)) {
             russia.visible = false;
              countRussia--;
         }        
@@ -104,28 +113,27 @@ window.addEventListener("keydown", function(event){
 
     switch (event.code) {
         case 'ArrowLeft':
-            packman.x -= 10;
-            packman.rotation = 3.14;
+            animatedSprite.x -= 10;
+            animatedSprite.rotation = 3.14;
             break;
         case 'ArrowRight':
-            packman.x += 10;
-            packman.rotation = 0;
+            animatedSprite.x += 10;
+            animatedSprite.rotation = 0;
             break;
         case 'ArrowUp':
-            packman.y -= 10;
-            packman.rotation = -1.57;
+            animatedSprite.y -= 10;
+            animatedSprite.rotation = -1.57;
             break;
         case 'ArrowDown':
-            packman.y += 10;
-            packman.rotation = 1.57;
+            animatedSprite.y += 10;
+            animatedSprite.rotation = 1.57;
             break;
         default:
-            packman.x += 0;
-            packman.y += 0;
+            animatedSprite.x += 0;
+            animatedSprite.y += 0;
             break;
     } 
 })
-
 
 function hitTestRectangle(r1, r2) {
     let hit;
