@@ -5,14 +5,11 @@ const app = new PIXI.Application({width: 1110, height: 752, backgroundColor: 0xf
 document.body.appendChild(app.view);
 
 PIXI.Loader.shared
-//   .add("image/dino.png")
   .add("image/russia.png")
   .add("image/UkraineMap.png")
   .add("image/win.jpg")
   .add("image/Pacman_HD2.png")
   .add("image/Pacman_HD.png")
-
-//   .add("image/pacman.png")
   .load(setup);
 
 let packman, packman2, russia, ukr, countRussia = 0, win, game, animatedSprite, startAnimationPosition = 0;
