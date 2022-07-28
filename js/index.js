@@ -1,14 +1,18 @@
 import * as PIXI from './pixi.mjs'
 
+
 const app = new PIXI.Application({width: 1110, height: 752, backgroundColor: 0xffffff});
 document.body.appendChild(app.view);
 
 PIXI.Loader.shared
-  .add("image/dino.png")
+//   .add("image/dino.png")
   .add("image/russia.png")
   .add("image/UkraineMap.png")
   .add("image/win.jpg")
-  .add("image/pacman.png")
+  .add("image/Pacman_HD2.png")
+  .add("image/Pacman_HD.png")
+
+//   .add("image/pacman.png")
   .load(setup);
 
 let packman, packman2, russia, ukr, countRussia = 0, win, game, animatedSprite, startAnimationPosition = 0;
@@ -23,14 +27,15 @@ function setup() {
         app.stage.addChild(ukr);
         ukr.scale.set(0.9, 0.9);
 
-        packman = new PIXI.Sprite(PIXI.Loader.shared.resources["image/dino.png"].texture);
+        packman = new PIXI.Sprite(PIXI.Loader.shared.resources["image/Pacman_HD2.png"].texture);
+
         allUkr.push(packman);
 
-        packman2 = new PIXI.Sprite(PIXI.Loader.shared.resources["image/pacman.png"].texture);
+        packman2 = new PIXI.Sprite(PIXI.Loader.shared.resources["image/Pacman_HD.png"].texture);
         allUkr.push(packman2);
 
         animatedSprite = new PIXI.AnimatedSprite(allUkr);
-        animatedSprite.scale.set(0.1, 0.1);
+        animatedSprite.scale.set(0.045, 0.045);
         animatedSprite.anchor.set(0.5, 0.5);
         gsap.fromTo(animatedSprite, {width: 0, height: 0}, {duration: 3, width: 90, height: 90}); 
 
@@ -70,6 +75,7 @@ function addRusFascist() {
         russia.x = getRandom(650, 960);
     } else russia.x = getRandom(500, 800);
     gsap.fromTo(russia, {x: 1200, width: 0, height: 0}, {x: russia.x, duration: 1.5, width: 51.2, height: 51.2}); 
+    russia.anchor.set(0.5, 0.5);
     app.stage.addChild(russia);
     allRus.push(russia);
     countRussia++;
